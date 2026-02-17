@@ -2,9 +2,9 @@ import os
 from celery import Celery
 
 # Set the default Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
-app = Celery('config')
+app = Celery('core')
 
 # Read config from Django settings (with CELERY_ prefix)
 app.config_from_object('django.conf:settings', namespace='CELERY')

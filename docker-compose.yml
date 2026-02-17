@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  web:
+  backend:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -37,7 +37,7 @@ services:
 
   celery:
     build: .
-    command: celery -A config worker --loglevel=info --concurrency=4
+    command: celery -A core worker --loglevel=info --concurrency=4
     volumes:
       - .:/code
     env_file:

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<form method="get">
+    <select name="completed">
+        <option value="">All</option>
+        <option value="True">Completed</option>
+        <option value="False">Not Completed</option>
+    </select>
+
+    <button type="submit">Filter</button>
+</form>
+
+<h3><a href="{% url 'task-create' %}">Create a task </a></h3>
+
+{% for task in tasks %}
+<h1> {{task.title}} </h1>
+<a href="{% url 'task-detail' task.pk%}">ID:{{task.id}}</a>
+<p>Description: {{task.description}}</p>
+<p>
+    Created by:
+    <a href="{% url 'task-list-creator' task.creator.id %}">
+        {{ task.creator.username }}
+    </a>
+      on {{ task.created_date|date:"d/m/Y" }}
+</p>
+<p> is completed: {{task.completed}}</p>
+<p>------</p>
+{% endfor %}
+</body>
+</html>

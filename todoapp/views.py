@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .models import Task
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class TaskListView(ListView):
     model= Task
@@ -24,7 +24,7 @@ class TaskDetailView(DetailView):
     template_name = 'taskdetail.html'
     context_object_name = 'task'
 
-class TaskCreateView(CreateView):
+class TaskCreateView(LoginRequiredMixin,CreateView):
     model = Task
     template_name = 'taskcreate.html'
     fields = ['title', 'description','due_date']

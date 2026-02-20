@@ -17,9 +17,9 @@
 
     <button type="submit">Filter</button>
 </form>
-
+{% if user.is_authenticated %}
 <h3><a href="{% url 'task-create' %}">Create a task </a></h3>
-
+{% endif %}
 {% for task in tasks %}
 <h1> {{task.title}} </h1>
 <a href="{% url 'task-detail' task.pk%}">ID:{{task.id}}</a>

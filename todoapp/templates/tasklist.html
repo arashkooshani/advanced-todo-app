@@ -2,37 +2,225 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            color: #444;
+        }
+
+        .user-status {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .user-status span {
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        select, button {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .create-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            padding: 10px 18px;
+            background: #764ba2;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: 0.3s ease;
+        }
+
+        .create-btn:hover {
+            background: #5f3b82;
+        }
+
+        .task-card {
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+            transition: 0.3s ease;
+        }
+
+        .task-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .task-title {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .task-meta {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 10px;
+        }
+
+        .task-description {
+            margin-bottom: 10px;
+        }
+
+        .task-actions a {
+            text-decoration: none;
+            margin-right: 15px;
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .task-actions a:hover {
+            text-decoration: underline;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .completed {
+            color: green;
+        }
+
+        .not-completed {
+            color: crimson;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .filter-form {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-<form method="get">
-    <select name="completed">
-        <option value="">All</option>
-        <option value="True">Completed</option>
-        <option value="False">Not Completed</option>
-    </select>
 
-    <button type="submit">Filter</button>
-</form>
-{% if user.is_authenticated %}
-<h3><a href="{% url 'task-create' %}">Create a task </a></h3>
-{% endif %}
-{% for task in tasks %}
-<h1> {{task.title}} </h1>
-<a href="{% url 'task-detail' task.pk%}">ID:{{task.id}}</a>
-<p>Description: {{task.description}}</p>
-<p>
-    Created by:
-    <a href="{% url 'task-list-creator' task.creator.id %}">
-        {{ task.creator.username }}
-    </a>
-      on {{ task.created_date|date:"d/m/Y" }}
-</p>
-<p> is completed: {{task.completed}}</p>
-<p>------</p>
-{% endfor %}
+<div class="container">
+
+    <div class="header">
+        <h2>Task Dashboard</h2>
+        <div class="user-status">
+            {% if user.is_authenticated %}
+                Logged in as <span>{{ request.user.username }}</span>
+            {% else %}
+                You are not logged in
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="get" class="filter-form">
+        <select name="completed">
+            <option value="">All Tasks</option>
+            <option value="True">Completed</option>
+            <option value="False">Not Completed</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <a href="{% url 'task-create' %}" class="create-btn">+ Create New Task</a>
+
+    {% for task in tasks %}
+        <div class="task-card">
+            <div class="task-title">{{ task.title }}</div>
+
+            <div class="task-meta">
+                Created by
+                <a href="{% url 'task-list-creator' task.creator.id %}">
+                    {{ task.creator.username }}
+                </a>
+                on {{ task.created_date|date:"d/m/Y" }}
+            </div>
+
+            <div class="task-description">
+                {{ task.description }}
+            </div>
+
+            <div class="status {% if task.completed %}completed{% else %}not-completed{% endif %}">
+                {% if task.completed %}
+                    ✔ Completed
+                {% else %}
+                    ✖ Not Completed
+                {% endif %}
+            </div>
+
+            <div class="task-actions" style="margin-top:10px;">
+                <a href="{% url 'task-detail' task.pk %}">View</a>
+                <a href="{% url 'task-update' task.pk %}">Edit</a>
+                <a href="{% url 'task-delete' task.pk %}">Delete</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No tasks found.</p>
+    {% endfor %}
+
+</div>
+
 </body>
 </html>

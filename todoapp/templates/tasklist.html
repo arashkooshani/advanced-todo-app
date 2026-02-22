@@ -1,9 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Dashboard</title>
+    <title>داشبورد کارها</title>
+
+    <!-- Persian Font (Vazir) -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" type="text/css" />
 
     <style>
         * {
@@ -13,13 +16,24 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Vazir', sans-serif;
             background: linear-gradient(135deg, #667eea, #764ba2);
             min-height: 100vh;
             padding: 40px 20px;
             color: #333;
+            direction: rtl;
         }
-
+        select, option {
+    font-family: 'Vazir', sans-serif;
+}
+        select {
+    text-align: right;   /* متن راست‌چین شود */
+    font-family: 'Vazir', sans-serif;
+}
+option {
+    text-align: right;
+    font-family: 'Vazir', sans-serif;
+}
         .container {
             max-width: 900px;
             margin: auto;
@@ -43,6 +57,7 @@
         .user-status {
             font-size: 14px;
             color: #666;
+            text-align: right;
         }
 
         .user-status span {
@@ -54,6 +69,7 @@
             display: flex;
             gap: 10px;
             margin-bottom: 30px;
+            justify-content: flex-end; /* Align filters to the right for RTL */
         }
 
         select, button {
@@ -64,16 +80,21 @@
         }
 
         button {
-            background: #667eea;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s ease;
-        }
+    background: #667eea;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-family: 'Vazir', sans-serif; /* فونت فارسی */
+    font-size: 14px;
+    padding: 10px 16px; /* کمی پهن‌تر برای متن فارسی */
+    border-radius: 8px;
+    text-align: center; /* متن وسط دکمه */
+}
 
-        button:hover {
-            background: #5a67d8;
-        }
+button:hover {
+    background: #5a67d8;
+}
 
         .create-btn {
             display: inline-block;
@@ -121,7 +142,7 @@
 
         .task-actions a {
             text-decoration: none;
-            margin-right: 15px;
+            margin-left: 15px; /* adjust for RTL */
             font-size: 14px;
             color: #667eea;
             font-weight: 500;
@@ -141,6 +162,17 @@
 
         .not-completed {
             color: crimson;
+        }
+
+        .task-category {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 20px;
+            background: #333;
+            color: #fff;
+            margin-bottom: 10px;
         }
 
         @media (max-width: 600px) {
@@ -165,59 +197,72 @@
 <div class="container">
 
     <div class="header">
-        <h2>Task Dashboard</h2>
+        <h2>داشبورد کارها</h2>
+
         <div class="user-status">
             {% if user.is_authenticated %}
-                Logged in as <span>{{ request.user.username }}</span>
+                <div>
+                    وارد شده به عنوان <span>{{ request.user.username }}</span>
+                </div>
+                <div style="margin-top:6px;">
+                    <a href="{% url 'logout' %}">خروج</a>
+                </div>
             {% else %}
-                You are not logged in
+                <div>
+                    وارد نشده‌اید
+                </div>
+                <div style="margin-top:6px;">
+                    <a href="{% url 'login' %}">ورود</a>
+                </div>
             {% endif %}
         </div>
     </div>
 
     <form method="get" class="filter-form">
         <select name="completed">
-            <option value="">All Tasks</option>
-            <option value="True">Completed</option>
-            <option value="False">Not Completed</option>
+            <option value="">همه کارها</option>
+            <option value="True">انجام شده</option>
+            <option value="False">انجام نشده</option>
         </select>
-        <button type="submit">Filter</button>
+        <button type="submit">فیلتر</button>
     </form>
 
-    <a href="{% url 'task-create' %}" class="create-btn">+ Create New Task</a>
+    <a href="{% url 'task-create' %}" class="create-btn">+ ایجاد کار جدید</a>
 
     {% for task in tasks %}
         <div class="task-card">
             <div class="task-title">{{ task.title }}</div>
 
             <div class="task-meta">
-                Created by
+                ساخته شده توسط
                 <a href="{% url 'task-list-creator' task.creator.id %}">
                     {{ task.creator.username }}
                 </a>
-                on {{ task.created_date|date:"d/m/Y" }}
+                در {{ task.created_date|date:"d/m/Y" }}
+                <p>اولویت: {{task.priority}}</p>
+                <p>تاریخ سررسید: {{task.due_date}}</p>
             </div>
 
-            <div class="task-description">
-                {{ task.description }}
+            <div class="task-category">
+                {{task.category.name}}
             </div>
 
             <div class="status {% if task.completed %}completed{% else %}not-completed{% endif %}">
                 {% if task.completed %}
-                    ✔ Completed
+                    ✔ انجام شده
                 {% else %}
-                    ✖ Not Completed
+                    ✖ انجام نشده
                 {% endif %}
             </div>
 
             <div class="task-actions" style="margin-top:10px;">
-                <a href="{% url 'task-detail' task.pk %}">View</a>
-                <a href="{% url 'task-update' task.pk %}">Edit</a>
-                <a href="{% url 'task-delete' task.pk %}">Delete</a>
+                <a href="{% url 'task-detail' task.pk %}">نمایش</a>
+                <a href="{% url 'task-update' task.pk %}">ویرایش</a>
+                <a href="{% url 'task-delete' task.pk %}">حذف</a>
             </div>
         </div>
     {% empty %}
-        <p>No tasks found.</p>
+        <p>کاری یافت نشد.</p>
     {% endfor %}
 
 </div>

@@ -1,9 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Task</title>
+    <title>ایجاد کار جدید</title>
+
+    <!-- Persian Font (Vazir) -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet" type="text/css" />
 
     <style>
         * {
@@ -13,13 +16,14 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Vazir', sans-serif;
             background: linear-gradient(135deg, #667eea, #764ba2);
             min-height: 100vh;
             padding: 40px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
+            direction: rtl;
         }
 
         .container {
@@ -46,6 +50,7 @@
             margin-bottom: 6px;
             font-weight: 600;
             color: #555;
+            text-align: right;
         }
 
         input, textarea, select {
@@ -55,6 +60,7 @@
             border: 1px solid #ddd;
             font-size: 14px;
             transition: 0.3s ease;
+            font-family: 'Vazir', sans-serif;
         }
 
         input:focus, textarea:focus, select:focus {
@@ -83,6 +89,7 @@
             border: none;
             cursor: pointer;
             font-size: 14px;
+            font-family: 'Vazir', sans-serif;
             transition: 0.3s ease;
         }
 
@@ -111,15 +118,21 @@
 <body>
 
 <div class="container">
-    <h2>Create New Task</h2>
+    <h2>ایجاد کار جدید</h2>
 
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
 
         <div class="form-actions">
-            <a href="{% url 'task-list' %}" class="back-link">← Back</a>
-            <button type="submit">Create Task</button>
+            <a href="{% url 'task-list' %}" class="back-link">← بازگشت</a>
+            <button type="submit">
+                {% if task.pk %}
+                    بروزرسانی کار
+                {% else %}
+                    ایجاد کار
+                {% endif %}
+            </button>
         </div>
     </form>
 </div>
